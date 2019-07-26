@@ -142,10 +142,6 @@ class fun:
         message = message.split()
         await ctx.send(' '.join(reversed(message)))
 
-    @commands.command()
-    async def sendm(self, ctx, *, msg):
-        channel = self.bot.get_channel(468517209325436932)
-        await channel.send(msg)
 
 def setup(bot):
     bot.add_cog(fun(bot))
