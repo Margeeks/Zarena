@@ -79,34 +79,6 @@ class utility:
         embed=discord.Embed(description =    ctx.author.mention,colour =    discord.Colour.red())
         await ctx.send(embed=embed)
 
-    @commands.command(name='translate')
-    async def _translate(self, ctx, text, *, langs=""):
-        def convert(s: str) -> dict:
-            a = s.lower().split()
-            res = {
-                a[i]: a[i + 1]
-                for i in range(len(a)) if a[i] in ("from", "to")
-            }
-            res["from"] = res.get("from") or "auto"
-            res["to"] = res.get("to") or "en"
-            return res
-
-        try:
-            langdict = convert(langs)
-        except IndexError:
-            raise commands.BadArgument("Invalid language format.")
-        translator = googletrans.Translator()
-        tmp = functools.partial(
-            translator.translate,
-            text,
-            src=langdict["from"],
-            dest=langdict["to"])
-        try:
-            async with ctx.typing():
-                res = await self.bot.loop.run_in_executor(None, tmp)
-        except ValueError as e:
-            raise commands.BadArgument(e.args[0].capitalize())
-        await ctx.send(res.text.replace("@", "@\u200b"))
 	
 def setup(bot):
     bot.add_cog(utility(bot))
