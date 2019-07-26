@@ -10,7 +10,7 @@ class mod:
     @commands.command()
     @commands.has_permissions(kick_members = True)
     async def mute(self, ctx, user : discord.User, time = None):
-        channel = self.bot.get_channel(474636816692019211)
+        channel = discord.utils.get(user.guild.channels, name="logs")
         if time != None:
             time = int(time)
             t = time * 60
@@ -28,7 +28,7 @@ class mod:
     @commands.has_permissions(ban_members=True)
     async def unmute(self, ctx, user: discord.Member):
         '''Unmute someone'''
-        channel = self.bot.get_channel(474636816692019211)
+        channel = discord.utils.get(user.guild.channels, name="logs")
         await ctx.channel.set_permissions(user, send_messages=True)
         embed=discord.Embed(title="", description=f"Done, {user.mention} is unmuted", color=0xff0000)          
         await channel.send(embed=embed)
@@ -47,7 +47,7 @@ class mod:
     @commands.has_permissions(kick_members = True)
     async def warn(self, ctx, user: discord.Member, *, reason):
         """Sends that warning."""
-        channel = self.bot.get_channel(474636816692019211)
+        channel = discord.utils.get(user.guild.channels, name="logs")
         embed = discord.Embed(color=0xf52338, title=f"WARNING From {ctx.author.guild.name}**.", description=f"{user.mention} has been warned")
         embed.add_field(name="Warned by", value=f"{ctx.author.name} ") 
         embed.add_field(name="Reason", value=f" {reason}")
@@ -59,7 +59,7 @@ class mod:
     @commands.has_permissions(kick_members = True)
     async def kick(self, ctx, user : discord.Member, *, reason = None):
         '''OFC kick anyone'''
-        channel = self.bot.get_channel(474636816692019211)
+        channel = discord.utils.get(user.guild.channels, name="logs")
         if reason != None:
             await ctx.send(f"Done, {user.mention} is kicked, reason = {reason} ")
             embed=discord.Embed(title="", description=f"Done, {user.mention} is kicked, reason = {reason} ", color=0xff0000)          
@@ -81,7 +81,7 @@ class mod:
     @commands.command()
     @commands.has_permissions(ban_members = True)
     async def ban(self, ctx, user : discord.User, *, reason = None):
-        channel = self.bot.get_channel(474636816692019211)
+        channel = discord.utils.get(user.guild.channels, name="logs")
         if reason != None:
             await ctx.send(f"Done, {user} is banned, reason = {reason} ")
             embed=discord.Embed(title="", description=f"Done, {user} is banned, reason = {reason} ", color=0xff0000)          
