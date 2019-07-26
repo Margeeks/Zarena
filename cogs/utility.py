@@ -76,8 +76,7 @@ class utility:
 
     @commands.command(name='pingme')
     async def pingme(self, ctx):
-        embed=discord.Embed(description =    ctx.author.mention,colour =    discord.Colour.red())
-        await ctx.send(embed=embed)
+        await ctx.send(ctx.author.mention)
 
 	
 def setup(bot):
