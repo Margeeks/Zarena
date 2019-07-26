@@ -73,25 +73,6 @@ class Info:
                 fmt = '{d}d ' + fmt
         return fmt.format(d=days, h=hours, m=minutes, s=seconds)
 
-    @commands.command(hidden=True)
-    @commands.is_owner()
-    async def commandstats(self, ctx, limit=20):
-        """Shows command stats.
-        Use a negative number for bottom instead of top.
-        This is only for the current session.
-        """
-        counter = self.bot.command_stats
-        width = len(max(counter, key=len))
-        #total = sum(counter.values())
-
-        if limit > 0:
-            common = counter.most_common(limit)
-        else:
-            common = counter.most_common()[limit:]
-
-        output = '\n'.join(f'{k:<{width}}: {c}' for k, c in common)
-
-        await ctx.send(f'```\n{output}\n```')
 
     @commands.command(aliases=['si', 'server'])
     async def serverinfo(self, ctx):
@@ -109,7 +90,7 @@ class Info:
         tm2=(len([m for m in guild.members if not m.bot]))
         om=(len([m for m in guild.members if m.status is not discord.Status.offline and not m.bot]))
         ds=f"{self.emoji('online')} {online}\n {self.emoji('idle')} {away}\n {self.emoji('dnd')} {dnd}\n {self.emoji('offline')} {offline}"
-        # member_by_status = Counter(str(m.status) for m in guild.members)
+        
         em = discord.Embed(description=created_at, color=color)
         em.add_field(name='Owner', value=guild.owner)
         em.add_field(name='Total users', value=f"{tm}\nHumans - {tm2}| Bots - {bots}")
@@ -125,9 +106,6 @@ class Info:
     async def userinfo(self, ctx, *,user: libneko.converters.InsensitiveMemberConverter = None):
         '''Get user info for yourself or someone in the guild'''
         user = user or ctx.message.author
-        desktop = user.desktop_status
-        web = user.web_status
-        mobile = user.mobile_status
         guild = ctx.message.guild
         top=user.top_role
         guild_owner = guild.owner
@@ -178,8 +156,6 @@ class Info:
             em.add_field(name='Join Date', value=user.joined_at.__format__('%A, %B %d, %Y')),
             em.add_field(name="Highest role", value=top)
             em.add_field(name='Roles', value=rolenames)
-            em.add_field(name="On Client", value="{client}".format(client="Desktop" if desktop is desktop.online or desktop is desktop.idle or desktop is desktop.dnd else "Web" if web is web.online or web is web.idle or web is web.dnd else "Mobile" if mobile is mobile.online or mobile is mobile.idle or mobile is mobile.dnd else "None")) 
-            em.add_field(name=f"Currently{' '+user.activity.type.name.title() if user.activity else ''}:",value=f"{user.activity.name if user.activity else 'Not doing anything important.'}",inline=True)
             count = 0
             async for message in ctx.channel.history(after=(ctx.message.created_at - timedelta(hours=1))):
                 if message.author == user:
@@ -187,9 +163,6 @@ class Info:
             em.add_field(name=f'Activity:',value=f'{user.display_name} has sent {count} 'f'{"message" if count == 1 else "messages"} in the last hour to this channel.',inline=False)
             em.set_thumbnail(url=avi or None)
             await ctx.send(embed=em)
-
-    
-    
 
     @commands.command(aliases=['role'])
     async def roleinfo(self, ctx, *, rolename):
@@ -297,7 +270,7 @@ class Info:
     async def about(self, ctx):
         """ About the bot """
         ramUsage = self.process.memory_full_info().rss / 1024**2
-        # cpuUsage = self.process.cpu_percent() / psutil.cpu_count()
+        
         plat=sys.platform
         uptime = self.get_uptime(brief=True)
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -311,7 +284,6 @@ class Info:
                     length+=len(lines)
         embed = discord.Embed(colour=ctx.me.top_role.colour)
         embed.set_thumbnail(url=ctx.bot.user.avatar_url)
-        #embed.add_field(name="Last boot", value=default.timeago(datetime.now() ), inline=True)
         embed.add_field(
             name=f"Developer{'' if len(self.config.owners) == 1 else 's'}",
             value=', '.join([str(self.bot.get_user(x)) for x in self.config.owners]),
@@ -323,36 +295,9 @@ class Info:
         embed.add_field(name="RAM Usage", value=f"{ramUsage:.2f} MB", inline=True)
         embed.add_field(name="CPU Usage", value=f"{psutil.cpu_percent()}% CPU", inline=True)
         embed.add_field(name="Lines of Code",value = length)
-        # embed.add_field(name='Commands Run', value=str(self.bot.counter))
-        embed.add_field(name='Uptime', value=uptime)
-        #embed.add_field(name='Commands Run', value=sum(self.bot.command_stats.values()))
-        #embed.add_field(name='Uptime', value=self.get_bot_uptime(brief=True))
+        embed.add_field(name='Uptime', value=uptime)   
         embed.set_footer(text='Made with discord.py', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(content=f"ℹ About **{ctx.bot.user}** | **{repo.version}**", embed=embed)
-
-    @commands.command(name='help')
-    async def _help(self, ctx, *, command: str = None):
-        """Shows help about a command or the bot"""
-        # pag = utils.Paginator(self.bot, embed=True, max_line_length=48)
-        # prefixes = await self.bot.get_prefix(self.bot, ctx.message)
-        # owner = await self.bot.get_user_info(self.bot.owner_id)
-        try:
-            if command is None:
-                p = await HelpPaginator.from_bot(ctx)
-            else:
-                entity = self.bot.get_cog(command) or self.bot.get_command(command)
-
-                if entity is None:
-                    clean = command.replace('@', '@\u200b')
-                    return await ctx.send(f'Command or category "{clean}" not found.')
-                elif isinstance(entity, commands.Command):
-                    p = await HelpPaginator.from_command(ctx, entity)
-                else:
-                    p = await HelpPaginator.from_cog(ctx, entity)
-
-            await p.paginate()
-        except Exception as e:
-            await ctx.send(e)
 
     @commands.command(brief = "shows the amount of users in the server")
     async def membercount(self, ctx):
