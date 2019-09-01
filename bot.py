@@ -24,7 +24,7 @@ def get_prefix(bot, message):
 
 cogs_dir = "cogs"
 bot = commands.Bot(command_prefix=get_prefix, description='Rewrite Cog')
-bot.launch_time = datetime.utcnow()
+bot.launch_time = datetime.datetime.utcnow()
 if __name__ == '__main__':
     for extension in [f.replace('.py', '') for f in listdir(cogs_dir) if isfile(join(cogs_dir, f))]:
         try:
