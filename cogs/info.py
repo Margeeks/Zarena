@@ -1,3 +1,28 @@
+"""
+MIT License
+
+Zarena Discord Bot
+Copyright (c) 2021 itsbravestone
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 import discord
 from discord.ext import commands
 import psutil
@@ -11,7 +36,6 @@ import inspect
 import unicodedata
 import logging
 import json
-import libneko.converters
 from utils import checks, formats
 from utils.paginator import HelpPaginator, CannotPaginate
 from collections import OrderedDict, deque, Counter
@@ -103,7 +127,7 @@ class Info:
         await ctx.send(embed=em)
 
     @commands.command(aliases=['ui', 'user'])
-    async def userinfo(self, ctx, *,user: libneko.converters.InsensitiveMemberConverter = None):
+    async def userinfo(self, ctx, *,user: discord.Member = None):
         '''Get user info for yourself or someone in the guild'''
         user = user or ctx.message.author
         guild = ctx.message.guild
@@ -156,11 +180,6 @@ class Info:
             em.add_field(name='Join Date', value=user.joined_at.__format__('%A, %B %d, %Y')),
             em.add_field(name="Highest role", value=top)
             em.add_field(name='Roles', value=rolenames)
-            count = 0
-            async for message in ctx.channel.history(after=(ctx.message.created_at - timedelta(hours=1))):
-                if message.author == user:
-                    count += 1
-            em.add_field(name=f'Activity:',value=f'{user.display_name} has sent {count} 'f'{"message" if count == 1 else "messages"} in the last hour to this channel.',inline=False)
             em.set_thumbnail(url=avi or None)
             await ctx.send(embed=em)
 
